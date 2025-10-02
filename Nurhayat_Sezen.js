@@ -1,10 +1,10 @@
 /**
- * Ebebek Product Carousel Implementation
- * This script creates a pixel-perfect product carousel for ebebek homepage
- * with favorites functionality, responsive design, and local storage support.
+ * Ebebek Product Carousel - Complete Implementation
+ * This code creates a horizontal scrolling product carousel for ebebek homepage
+ * Features: favorites, responsive design, discount calculation, and smooth animations
  */
 
-// Clean up any existing carousel to avoid duplicates
+// First, clean up any existing carousel to avoid duplicates
 const existingCarousel = document.querySelector(".ebebek-case-carousel");
 if (existingCarousel) {
   existingCarousel.remove();
@@ -16,8 +16,9 @@ if (existingStyle && existingStyle.textContent.includes("ebebek-case")) {
 }
 
 /**
- * CSS Styles for Pixel Perfect Design
- * Matches ebebek's design system exactly
+ * CSS Styles for the carousel
+ * I designed this to match ebebek's visual identity exactly
+ * The key aspects are proper flexbox setup for horizontal scrolling
  */
 const carouselStyles = `
 .ebebek-case-carousel {
@@ -40,9 +41,6 @@ const carouselStyles = `
     border-radius: 12px;
     padding: 20px 24px;
     margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     border: 1px solid #ffe8d6;
 }
 
@@ -59,22 +57,32 @@ const carouselStyles = `
     color: #666;
 }
 
+/* Main scrolling container - this enables horizontal scrolling */
+.ebebek-case-products-wrapper {
+    width: 100%;
+    position: relative;
+}
+
 .ebebek-case-products {
     display: flex;
     gap: 12px;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding: 8px 4px 16px;
+    width: 100%;
 }
 
 .ebebek-case-products::-webkit-scrollbar {
     display: none;
 }
 
+/* Individual product cards - fixed width prevents flex shrinking */
 .ebebek-case-product {
-    flex: 0 0 220px;
+    flex: 0 0 auto;
+    width: 220px;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -188,10 +196,40 @@ const carouselStyles = `
     background: #e66a00;
 }
 
-/* Responsive Design */
+.ebebek-case-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.ebebek-case-prev {
+    left: -20px;
+}
+
+.ebebek-case-next {
+    right: -20px;
+}
+
+.ebebek-case-nav:hover {
+    background: #f5f5f5;
+}
+
 @media (max-width: 768px) {
     .ebebek-case-product {
-        flex: 0 0 200px;
+        width: 200px;
     }
     
     .ebebek-case-hero {
@@ -201,17 +239,25 @@ const carouselStyles = `
     .ebebek-case-hero-content h3 {
         font-size: 16px;
     }
+    
+    .ebebek-case-nav {
+        display: none;
+    }
+    
+    .ebebek-case-products {
+        padding: 8px 0 16px;
+    }
 }
 `;
 
-// Inject styles into the document
+// Add the CSS to the page
 const styleElement = document.createElement("style");
 styleElement.textContent = carouselStyles;
 document.head.appendChild(styleElement);
 
 /**
- * Create main carousel container with hero banner
- * This structure matches ebebek's design pattern
+ * Build the HTML structure for the carousel
+ * I'm creating all elements dynamically to work on any page
  */
 const carouselContainer = document.createElement("div");
 carouselContainer.className = "ebebek-case-carousel";
@@ -225,57 +271,64 @@ carouselContainer.innerHTML = `
         </div>
     </div>
     
-    <div class="ebebek-case-products" id="ebebek-products">
-        <div class="ebebek-case-product">Ürünler yükleniyor...</div>
+    <div class="ebebek-case-products-wrapper">
+        <div class="ebebek-case-products" id="ebebek-products">
+            <div class="ebebek-case-product">Ürünler yükleniyor...</div>
+        </div>
     </div>
 `;
 
-// Insert carousel at the top of the page
+// Add the carousel to the top of the page
 document.body.prepend(carouselContainer);
 
-console.log("Product carousel initialized successfully");
+console.log("Carousel HTML structure created successfully");
 
 /**
- * Favorite Products Management
- * Uses localStorage to persist user preferences
+ * Favorites Management System
+ * I used localStorage to remember user preferences between page visits
  */
 const FAVORITES_STORAGE_KEY = "ebebek-favorites";
 
-function getFavoriteProducts() {
+// Get current favorites from localStorage
+function getFavorites() {
   try {
     return JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
   } catch (error) {
-    console.error("Error reading favorites:", error);
+    console.log("Error reading favorites, starting with empty list");
     return [];
   }
 }
 
-function toggleProductFavorite(productId, buttonElement) {
-  const userFavorites = getFavoriteProducts();
-  const productIndex = userFavorites.indexOf(productId);
+// Toggle favorite status for a product
+function toggleFavorite(productId, button) {
+  const favorites = getFavorites();
+  const index = favorites.indexOf(productId);
 
-  if (productIndex > -1) {
+  if (index > -1) {
     // Remove from favorites
-    userFavorites.splice(productIndex, 1);
-    buttonElement.classList.remove("favorited");
-    buttonElement.innerHTML = "♡";
+    favorites.splice(index, 1);
+    button.classList.remove("favorited");
+    button.innerHTML = "♡";
+    console.log("Removed product from favorites:", productId);
   } else {
     // Add to favorites
-    userFavorites.push(productId);
-    buttonElement.classList.add("favorited");
-    buttonElement.innerHTML = "♥";
+    favorites.push(productId);
+    button.classList.add("favorited");
+    button.innerHTML = "♥";
+    console.log("Added product to favorites:", productId);
   }
 
-  // Save updated favorites to localStorage
-  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(userFavorites));
+  // Save updated list
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
 }
 
 /**
- * Format price to Turkish Lira format
- * @param {number} price - Product price
- * @returns {string} Formatted price string
+ * Utility Functions
+ * These helper functions format prices and calculate discounts
  */
-function formatPriceToTRY(price) {
+
+// Format price as Turkish Lira
+function formatPrice(price) {
   return new Intl.NumberFormat("tr-TR", {
     style: "currency",
     currency: "TRY",
@@ -283,12 +336,7 @@ function formatPriceToTRY(price) {
   }).format(price);
 }
 
-/**
- * Calculate discount percentage
- * @param {number} originalPrice - Original product price
- * @param {number} currentPrice - Current product price
- * @returns {number|null} Discount percentage or null if no discount
- */
+// Calculate discount percentage between original and current price
 function calculateDiscount(originalPrice, currentPrice) {
   if (originalPrice && originalPrice > currentPrice) {
     return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
@@ -297,145 +345,173 @@ function calculateDiscount(originalPrice, currentPrice) {
 }
 
 /**
- * Fetch products from API and render carousel
- * Implements error handling and data validation
+ * Navigation System
+ * I added arrow buttons for better user experience
+ */
+function addNavigation() {
+  const wrapper = document.querySelector(".ebebek-case-products-wrapper");
+  const products = document.getElementById("ebebek-products");
+
+  // Create previous button
+  const prevBtn = document.createElement("button");
+  prevBtn.className = "ebebek-case-nav ebebek-case-prev";
+  prevBtn.innerHTML = "‹";
+  prevBtn.setAttribute("aria-label", "Previous products");
+
+  // Create next button
+  const nextBtn = document.createElement("button");
+  nextBtn.className = "ebebek-case-nav ebebek-case-next";
+  nextBtn.innerHTML = "›";
+  nextBtn.setAttribute("aria-label", "Next products");
+
+  // Add click handlers for smooth scrolling
+  prevBtn.addEventListener("click", () => {
+    products.scrollBy({ left: -300, behavior: "smooth" });
+  });
+
+  nextBtn.addEventListener("click", () => {
+    products.scrollBy({ left: 300, behavior: "smooth" });
+  });
+
+  // Add buttons to the page
+  wrapper.appendChild(prevBtn);
+  wrapper.appendChild(nextBtn);
+
+  console.log("Navigation arrows added");
+}
+
+/**
+ * Product Loading and Display
+ * This is the main function that fetches and displays products
  */
 const PRODUCTS_API_URL =
   "https://gist.githubusercontent.com/sevindi/8bcbde9f02c1d4abe112809c974e1f49/raw/9bf93b58df623a9b16f1db721cd0a7a539296cf0/products.json";
 
-async function loadAndDisplayProducts() {
+async function loadProducts() {
   try {
-    const apiResponse = await fetch(PRODUCTS_API_URL);
+    console.log("Starting to load products from API...");
 
-    if (!apiResponse.ok) {
-      throw new Error(`HTTP error! status: ${apiResponse.status}`);
-    }
+    const response = await fetch(PRODUCTS_API_URL);
+    const data = await response.json();
 
-    const responseData = await apiResponse.json();
-
-    // Handle different possible data structures
-    let productList = [];
-    if (Array.isArray(responseData)) {
-      productList = responseData;
-    } else if (responseData.products && Array.isArray(responseData.products)) {
-      productList = responseData.products;
+    // Handle different possible data structures from API
+    let products = [];
+    if (Array.isArray(data)) {
+      products = data;
+    } else if (data.products) {
+      products = data.products;
     } else {
-      productList = Object.values(responseData);
+      products = Object.values(data);
     }
 
-    const productsContainer = document.getElementById("ebebek-products");
-    productsContainer.innerHTML = "";
+    const container = document.getElementById("ebebek-products");
+    container.innerHTML = "";
 
-    const userFavorites = getFavoriteProducts();
+    const favorites = getFavorites();
 
-    // Create product cards for first 8 products
-    productList.slice(0, 8).forEach((product) => {
+    console.log(`Loaded ${products.length} products from API`);
+
+    // Create product cards for first 10 products
+    products.slice(0, 10).forEach((product) => {
       const productCard = document.createElement("div");
       productCard.className = "ebebek-case-product";
 
-      // Extract product data with fallbacks
-      const productName =
-        product.name || product.title || "Product Name Not Available";
-      const productPrice = product.price || product.currentPrice || 0;
-      const originalProductPrice =
-        product.originalPrice || product.oldPrice || null;
-      const productImage =
+      // Extract product data with safety checks
+      const title =
+        product.name || product.title || "Product name not available";
+      const price = product.price || product.currentPrice || 0;
+      const originalPrice = product.originalPrice || product.oldPrice || null;
+      const image =
         product.img ||
         product.image ||
         "https://via.placeholder.com/200x200?text=No+Image";
-      const productIdentifier =
-        product.id || `product-${Math.random().toString(36).substr(2, 9)}`;
-      const isProductFavorited = userFavorites.includes(productIdentifier);
+      const productId = product.id || Math.random();
+      const isFavorited = favorites.includes(productId);
+      const discount = calculateDiscount(originalPrice, price);
 
-      // Calculate discount if applicable
-      const discountPercentage = calculateDiscount(
-        originalProductPrice,
-        productPrice
-      );
-
-      // Build product card HTML
+      // Build the product card HTML
       productCard.innerHTML = `
                 <div class="ebebek-case-image">
-                    <img src="${productImage}" alt="${productName}" 
+                    <img src="${image}" alt="${title}" 
                          onerror="this.src='https://via.placeholder.com/200x200?text=No+Image'">
                     <button class="ebebek-case-favorite ${
-                      isProductFavorited ? "favorited" : ""
+                      isFavorited ? "favorited" : ""
                     }" 
-                            data-product-id="${productIdentifier}">
-                        ${isProductFavorited ? "♥" : "♡"}
+                            data-id="${productId}">
+                        ${isFavorited ? "♥" : "♡"}
                     </button>
                 </div>
                 <div class="ebebek-case-info">
-                    <div class="ebebek-case-name">${productName}</div>
+                    <div class="ebebek-case-name">${title}</div>
                     <div class="ebebek-case-price-container">
                         <div class="ebebek-case-current-price">
-                            ${formatPriceToTRY(productPrice)}
+                            ${formatPrice(price)}
                         </div>
                         ${
-                          originalProductPrice &&
-                          originalProductPrice > productPrice
+                          originalPrice && originalPrice > price
                             ? `<div class="ebebek-case-original-price">
-                                ${formatPriceToTRY(originalProductPrice)}
+                                ${formatPrice(originalPrice)}
                             </div>`
                             : ""
                         }
                         ${
-                          discountPercentage
-                            ? `<div class="ebebek-case-discount">%${discountPercentage}</div>`
+                          discount
+                            ? `<div class="ebebek-case-discount">%${discount}</div>`
                             : ""
                         }
                     </div>
-                    <button class="ebebek-case-button" data-product-id="${productIdentifier}">
+                    <button class="ebebek-case-button" data-id="${productId}">
                         Sepete Ekle
                     </button>
                 </div>
             `;
 
       // Add event listeners for interactivity
-      const favoriteButton = productCard.querySelector(".ebebek-case-favorite");
-      const addToCartButton = productCard.querySelector(".ebebek-case-button");
+      const favoriteBtn = productCard.querySelector(".ebebek-case-favorite");
+      const addToCartBtn = productCard.querySelector(".ebebek-case-button");
 
-      // Favorite button click handler
-      favoriteButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        toggleProductFavorite(productIdentifier, favoriteButton);
+      // Handle favorite button clicks
+      favoriteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleFavorite(productId, favoriteBtn);
       });
 
-      // Add to cart button click handler
-      addToCartButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        console.log("Product added to cart:", productIdentifier);
-        alert("Ürün sepete eklendi: " + productName);
+      // Handle add to cart button clicks
+      addToCartBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log("Product added to cart:", productId);
+        alert("Ürün sepete eklendi: " + title);
       });
 
-      // Whole product card click handler - opens product page
+      // Handle clicking on the product card
       productCard.addEventListener("click", () => {
-        const productPageURL =
+        const productUrl =
           product.url ||
-          `https://www.e-bebek.com/search?q=${encodeURIComponent(productName)}`;
-        window.open(productPageURL, "_blank");
+          `https://www.e-bebek.com/search?q=${encodeURIComponent(title)}`;
+        window.open(productUrl, "_blank");
       });
 
-      productsContainer.appendChild(productCard);
+      container.appendChild(productCard);
     });
 
-    console.log("Product carousel loaded successfully! 🎉");
-    console.log("Implemented Features:");
-    console.log("✅ Hero banner with gradient design");
-    console.log("✅ Favorite functionality with localStorage persistence");
-    console.log("✅ Discount calculation and display");
-    console.log("✅ Hover effects and smooth transitions");
-    console.log("✅ Responsive design for all devices");
-    console.log("✅ Pixel perfect design matching ebebek style");
-    console.log("✅ Product page navigation in new tab");
-    console.log("✅ Error handling for image loading");
+    // Add navigation after products are loaded
+    addNavigation();
+
+    console.log("Product carousel successfully loaded!");
+    console.log("Features implemented:");
+    console.log("- Horizontal scrolling carousel");
+    console.log("- Favorite products with localStorage");
+    console.log("- Discount calculation and display");
+    console.log("- Responsive design for mobile devices");
+    console.log("- Smooth hover animations");
+    console.log("- Product page navigation");
   } catch (error) {
     console.error("Error loading products:", error);
-    const productsContainer = document.getElementById("ebebek-products");
-    productsContainer.innerHTML =
+    const container = document.getElementById("ebebek-products");
+    container.innerHTML =
       '<div class="ebebek-case-product">Error loading products. Please refresh the page.</div>';
   }
 }
 
-// Initialize the product carousel
-loadAndDisplayProducts();
+// Start the carousel
+loadProducts();
