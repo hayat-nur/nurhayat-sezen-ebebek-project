@@ -1,81 +1,46 @@
-# Ebebek Product Carousel Implementation
+# Ebebek Product Carousel
 
-## 📌 Project Overview
+A professional product carousel component designed specifically for ebebek homepage. This implementation focuses on user experience with a clean and modern interface.
 
-This project delivers a **pixel-perfect product carousel** for
-**ebebek.com** homepage.\
-It is built with **pure JavaScript and CSS**, following ebebek's design
-system and optimized for responsiveness and user interactivity.
+## Features
 
-The carousel dynamically fetches product data, supports favorites with
-persistence, calculates discounts, and ensures a smooth user experience
-across devices.
+### Core Functionality
 
----
+- **Product Display**: Clean product cards with images, pricing, and ratings
+- **Favorite System**: Heart icon to save/remove products from favorites
+- **Discount Handling**: Shows original price, discount percentage, and sale price
+- **Installment Badges**: Highlights products with installment options
+- **Fast Delivery**: Displays next-day delivery availability
 
-## 🚀 Features Implemented
+### Technical Features
 
-- 🎨 **Pixel-Perfect Design** → Matches ebebek's visual identity\
-- 📱 **Responsive Layout** → Works seamlessly on desktop, tablet, and
-  mobile\
-- ❤️ **Favorites System** → Heart icon with `localStorage`
-  persistence\
-- 💰 **Discount Calculation** → Automatic percentage badge for sales\
-- ✨ **Smooth Animations** → Hover effects and transitions\
-- 🔗 **Product Navigation** → Opens product pages in a new tab\
-- 🛠️ **Error Handling** → Fallbacks for missing images or API errors
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Smooth Scrolling**: Horizontal navigation with arrow buttons
+- **Local Storage**: Caches products and user favorites
+- **API Integration**: Fetches products from external API
+- **Performance**: 24-hour cache system to reduce API calls
 
----
+## Project Structure
 
-## 🛠️ Technical Implementation
+- Nurhayat_Sezen.js
+- README.md
 
-- **Language:** Vanilla JavaScript (no external frameworks)\
-- **Layout:** CSS Flexbox/Grid for responsive design\
-- **Data:** Fetch API (JSON source for product data)\
-- **Persistence:** localStorage for user favorites\
-- **Accessibility:** ARIA labels on navigation buttons\
-- **Performance:** Smooth scrolling and minimal reflows
+## Installation & Usage
 
----
+### For Website Integration
 
-## 📂 File Structure
+1. Include the JavaScript file in your ebebek project
+2. Add the script tag to your homepage HTML
+3. The carousel automatically initializes on page load
+4. No additional dependencies or setup required
 
-    nurhayat-sezen-ebebek-project/
-    │
-    ├── index.html        # Test/demo HTML file
-    ├── Nurhayat_Sezen.js # Main carousel implementation
-    └── README.md         # Documentation
+### For Development & Testing (Chrome DevTools)
 
----
+You can directly test this carousel in Chrome Developer Tools:
 
-## ▶️ How to Run
+1. **Open Chrome DevTools** on ebebek homepage (F12)
+2. **Navigate to Console** tab
+3. **Copy and paste** the entire carousel code
+4. **Press Enter** to execute
 
-1.  Open **[ebebek.com](https://www.e-bebek.com/)** in **Google
-    Chrome**\
-2.  Open **Developer Tools** (`F12`)\
-3.  Copy-paste the contents of `Nurhayat_Sezen.js` into the **Console**\
-4.  Press **Enter** → Carousel will render at the top of the page 🎉
-
----
-
-## 🧑‍💻 Developer Notes
-
-- Designed strictly according to **ebebek design guidelines**\
-- Covers **all main interaction flows** (favorites, navigation,
-  product details)\
-- Robust error handling for missing data and images\
-- Optimized for smooth scrolling & hover transitions\
-- Tested on **Chrome, Firefox, Edge** (desktop + mobile views)
-
----
-
-## 🔮 Future Improvements
-
-- 🛒 Integration with a real **shopping cart API**\
-- 🤏 Support for **touch swipe gestures** on mobile\
-- 🌙 Optional **dark mode** adaptation\
-- 📊 Performance monitoring & lazy loading for large product sets
-
----
-
-✨ Developed with care by **Nurhayat Sezen**
+The carousel will immediately appear on the page.

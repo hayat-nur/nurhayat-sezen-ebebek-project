@@ -1,8 +1,4 @@
-/**
- * Ebebek Product Carousel
- * Professional implementation of product carousel for ebebek homepage
- * Features: Favorite functionality, responsive design, smooth scrolling
- */
+// Ebebek Product Carousel
 
 (function () {
   "use strict";
